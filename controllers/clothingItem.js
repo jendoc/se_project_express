@@ -1,52 +1,72 @@
 const ClothingItem = require("../models/clothingItem");
+const { handleError } = require("../utils/errors");
 
-const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
+// CREATE
+module.exports.createClothingItem = (req, res) => {
+  const userId = req.user._id;
+  const { name, weather, imageUrl } = req.body;
 
-  const { name, weather, imageURL } = req.body;
-
-  ClothingItem.create({ name, weather, imageURL })
+  ClothingItem.create({ name, weather, imageUrl, owner: userId })
     .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+      res.status(201).send({ data: item });
     })
     .catch((e) => {
-      res.status(500).send({ message: "Error from createItem", e });
+      handleError(e, res);
     });
 };
 
-const getItems = (req, res) => {
+// READ
+module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
-      res.status(500).send({ message: "Error from getItems", e });
+      handleError(e, res);
     });
 };
 
-const updateItem = (req, res) => {
+// UPDATE
+module.exports.updateClothingItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
+  const { imageUrl } = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(500).send({ message: "Error from updateItem", e });
+      handleError(e, res);
     });
 };
 
-const deleteItem = (req, res) => {
-    const { itemId} = req.params;
-    console.log(itemId);
-    ClothingItem.findByIdAndDelete(itemId).orFail().then((item) => res.status(204).send({}))    .catch((e) => {
-        res.status(500).send({ message: "Error from deleteItem", e });
-      });
-}
-
-module.exports = {
-  createItem,
-  getItems,
-  updateItem,
-  deleteItem
+// DELETE
+module.exports.deleteClothingItem = (req, res) => {
+  const { itemId } = req.params;
+  ClothingItem.findByIdAndDelete(itemId)
+    .orFail()
+    .then((item) => res.status(204).send({}))
+    .catch((e) => {
+      handleError(e, res);
+    });
 };
+
+module.exports.likeClothingItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      handleError(e, res);
+    });
+module.exports.dislikeClothingItem = (req, res) =>
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((e) => {
+      handleError(e, res);
+    });
