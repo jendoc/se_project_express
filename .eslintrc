@@ -1,0 +1,6 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "eslint no-underscore-dangle": ["error", { "allow": ["foo_", "_bar"] }]
+  }
+}
