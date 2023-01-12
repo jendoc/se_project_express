@@ -1,4 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
+
 const { handleError } = require("../utils/errors");
 
 // CREATE

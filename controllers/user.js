@@ -1,4 +1,5 @@
 const User = require("../models/user");
+
 const { handleError } = require("../utils/errors");
 
 // CREATE
