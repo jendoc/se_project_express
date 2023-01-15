@@ -30,7 +30,11 @@ module.exports.updateClothingItem = (req, res) => {
   const { itemId } = req.params;
   const { imageUrl } = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
+  ClothingItem.findByIdAndUpdate(itemId, {
+    $set: { imageUrl },
+    new: true,
+    runValidators: true,
+  })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
@@ -43,7 +47,7 @@ module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(204).send({}))
+    .then(() => res.status(204).send({}))
     .catch((e) => {
       handleError(e, res);
     });
