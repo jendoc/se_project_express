@@ -5,6 +5,7 @@ const ERROR_CODES = {
   Unauthorized: 401,
   Forbidden: 403,
   NotFound: 404,
+  DuplicateEmail: 409,
   ServerError: 500,
 };
 
@@ -27,6 +28,10 @@ const handleError = (err, res) => {
     res
       .status(ERROR_CODES.NotFound)
       .send({ message: `${ERROR_CODES.NotFound} Not found` });
+  } else if (err.name === "DocumentNotFoundError") {
+    res
+      .status(ERROR_CODES.DuplicateEmail)
+      .send({ message: `${ERROR_CODES.NotFound} That email address is already associated with an account` });
   } else {
     res.status(ERROR_CODES.ServerError).send({
       message: `${ERROR_CODES.ServerError} Something went wrong`,
