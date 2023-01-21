@@ -9,16 +9,16 @@ const app = express();
 
 mongoose.connect(
   "mongodb://localhost:27017/wtwr_db",
-  (r) => {
-    console.log("connected to DB", r);
+  (res) => {
+    console.log("connected to DB", res);
   },
-  (e) => {
-    console.log("DB error", e);
+  (err) => {
+    console.log("DB error", err);
   }
 );
 
 const routes = require("./routes");
-const { createUser, login } = require("./controllers/user");
+const { createUser, login } = require("./controllers/users");
 
 app.use(express.json());
 app.use(routes);

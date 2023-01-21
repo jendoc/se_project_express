@@ -11,8 +11,8 @@ module.exports.createClothingItem = (req, res) => {
     .then((item) => {
       res.status(201).send({ data: item });
     })
-    .catch((e) => {
-      handleError(e, res);
+    .catch((err) => {
+      handleError(err, res);
     });
 };
 
@@ -20,8 +20,8 @@ module.exports.createClothingItem = (req, res) => {
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch((e) => {
-      handleError(e, res);
+    .catch((err) => {
+      handleError(err, res);
     });
 };
 
@@ -37,8 +37,8 @@ module.exports.updateClothingItem = (req, res) => {
   })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      handleError(e, res);
+    .catch((err) => {
+      handleError(err, res);
     });
 };
 
@@ -48,8 +48,16 @@ module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then(() => res.status(204).send({}))
-    .catch((e) => {
-      handleError(e, res);
+    .then((item) => {
+      if (item.owner.equals(req.userId)) {
+        return item.remove(() => res.send({ clothingItem: item }));
+      }
+      return res.status(403).send({
+        message: "Forbidden",
+      });
+    })
+    .catch((err) => {
+      handleError(err, res);
     });
 };
 
@@ -61,8 +69,8 @@ module.exports.likeClothingItem = (req, res) =>
   )
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      handleError(e, res);
+    .catch((err) => {
+      handleError(err, res);
     });
 module.exports.dislikeClothingItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
@@ -72,6 +80,6 @@ module.exports.dislikeClothingItem = (req, res) =>
   )
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      handleError(e, res);
+    .catch((err) => {
+      handleError(err, res);
     });
