@@ -15,7 +15,7 @@ const {
 router.post("/", auth, createClothingItem);
 
 // READ
-router.get("/", auth, getClothingItems);
+router.get("/", getClothingItems);
 
 // UPDATE
 router.put("/:itemId", auth, updateClothingItem);

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const validator = require("validator");
 
@@ -21,7 +22,7 @@ const userSchema = new mongoose.Schema({
       "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png",
   },
   email: {
-    required: true,
+    required: [true, 'Must be a valid email'],
     type: String,
     unique: true,
     validate: {
@@ -30,12 +31,13 @@ const userSchema = new mongoose.Schema({
     },
   },
   password: {
-    required: true,
+    required: [true, 'Please enter a password'],
     type: String,
-    minlength: 8,
+    minlength: [8, "Password must be at least 8 characters"],
     select: false,
   },
 });
+
 userSchema.statics.findUserByCredentials = function findUserByCredentials(
   email,
   password
@@ -55,4 +57,4 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     });
 };
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("user", userSchema);

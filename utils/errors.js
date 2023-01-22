@@ -5,12 +5,12 @@ const ERROR_CODES = {
   Unauthorized: 401,
   Forbidden: 403,
   NotFound: 404,
-  DuplicateEmail: 409,
+  Conflict: 409,
   ServerError: 500,
 };
 
-const handleError = (err, res) => {
-  if (err.statusCode === "OK" || err.statusCode === "Created") {
+const handleError = (err, req, res, next) => {
+  if (err.statusCode === 200 || err.statusCode === 201) {
     res.status(err.statusCode).send({ message: `${err.statusCode} Success` });
   } else if (err.name === "ValidationError" || err.name === "CastError") {
     res
@@ -29,11 +29,9 @@ const handleError = (err, res) => {
       .status(ERROR_CODES.NotFound)
       .send({ message: `${ERROR_CODES.NotFound} Not found` });
   } else if (err.statusCode === 409) {
-    res
-      .status(ERROR_CODES.DuplicateEmail)
-      .send({
-        message: `${ERROR_CODES.DuplicateEmail} That email address is already associated with an account`,
-      });
+    res.status(ERROR_CODES.Conflict).send({
+      message: `${ERROR_CODES.Conflict} That email address is already associated with an account`,
+    });
   } else {
     res.status(ERROR_CODES.ServerError).send({
       message: `${ERROR_CODES.ServerError} Something went wrong`,

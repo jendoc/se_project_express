@@ -1,3 +1,3 @@
-const { JWT_SECRET = 'super-extra-secret' } = process.env;
+const JWT_SECRET = "super-extra-secret";
 
-module.exports = { JWT_SECRET }
+module.exports = { JWT_SECRET };
