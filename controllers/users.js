@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 //const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -23,11 +23,16 @@ module.exports.createUser = (req, res) => {
           avatar: avatar,
           email: email,
           password: hash,
-        }).then(() =>
-          res.setHeader("Content-Type", "application/json").status(201).send({ name, avatar, email })
-        ).catch((err) => {
-          handleError(err, req, res);
-        });
+        })
+          .then(() =>
+            res
+              .setHeader("Content-Type", "application/json")
+              .status(201)
+              .send({ name, avatar, email })
+          )
+          .catch((err) => {
+            handleError(err, req, res);
+          });
       });
     })
     .catch((err) => {
@@ -35,31 +40,30 @@ module.exports.createUser = (req, res) => {
     });
 };
 
- // READ
- module.exports.getUsers = (req, res) => {
-   User.find({})
-     .then((users) => res.status(200).send(users))
-     .catch((err) => {
+// READ
+module.exports.getUsers = (req, res) => {
+  User.find({})
+    .then((users) => res.status(200).send(users))
+    .catch((err) => {
       //res.send({ message: err.message });
-      handleError(err, res);
-     });
- };
+      handleError(err, req, res);
+    });
+};
 
 // READ:ID
 module.exports.getCurrentUser = (req, res) => {
-  const { userId } = req.params;
-
-  User.findById(userId)
-    .then((user) => res.status(200).send( user ))
+  User.findById(req.params.userId)
+    .then((user) => {
+      console.log(req.params)
+      res.status(200).send({ user });
+    })
     .catch((err) => {
-      res.send({ message: err.message });
-      //handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
 // UPDATE
 module.exports.updateUser = (req, res) => {
-  // const userId = req.user._id;
   const { name, avatar, userId } = req.params;
 
   User.findByIdAndUpdate(
@@ -69,8 +73,7 @@ module.exports.updateUser = (req, res) => {
   )
     .then((user) => res.status(200).send({ user }))
     .catch((err) => {
-      res.send({ message: err.message });
-      // handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
@@ -87,6 +90,6 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       res.status(401).send({ message: err.message });
-      //handleError(err, res);
+      //handleError(err, req, res);
     });
 };

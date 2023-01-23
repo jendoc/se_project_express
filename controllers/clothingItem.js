@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 
 const { handleError } = require("../utils/errors");
@@ -12,7 +13,7 @@ module.exports.createClothingItem = (req, res) => {
       res.status(201).send({ data: item });
     })
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
@@ -21,7 +22,7 @@ module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
@@ -38,17 +39,17 @@ module.exports.updateClothingItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
 // DELETE
 module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
+
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then(() => res.status(204).send({}))
     .then((item) => {
+      console.log(item)
       if (item.owner.equals(req.userId)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
@@ -57,10 +58,11 @@ module.exports.deleteClothingItem = (req, res) => {
       });
     })
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
 };
 
+// LIKE
 module.exports.likeClothingItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -70,8 +72,10 @@ module.exports.likeClothingItem = (req, res) =>
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
+
+// DISLIKE
 module.exports.dislikeClothingItem = (req, res) =>
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -81,5 +85,5 @@ module.exports.dislikeClothingItem = (req, res) =>
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });

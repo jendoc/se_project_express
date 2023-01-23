@@ -9,7 +9,7 @@ const ERROR_CODES = {
   ServerError: 500,
 };
 
-const handleError = (err, req, res, next) => {
+const handleError = (err, req, res) => {
   if (err.statusCode === 200 || err.statusCode === 201) {
     res.status(err.statusCode).send({ message: `${err.statusCode} Success` });
   } else if (err.name === "ValidationError" || err.name === "CastError") {
