@@ -25,11 +25,13 @@ module.exports.createUser = (req, res) => {
           password: hash,
         }).then(() =>
           res.setHeader("Content-Type", "application/json").status(201).send({ name, avatar, email })
-        );
+        ).catch((err) => {
+          handleError(err, req, res);
+        });
       });
     })
     .catch((err) => {
-      handleError(err, res);
+      handleError(err, req, res);
     });
 };
 

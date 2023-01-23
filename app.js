@@ -10,7 +10,7 @@ const app = express();
 mongoose.connect(
   "mongodb://localhost:27017/wtwr_db",
   (res) => {
-    console.log("connected to DB", res);
+    console.log("connected to DB");
   },
   (err) => {
     console.log("DB error", err);
