@@ -1,11 +1,9 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-//const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const { handleError, handleAuthError } = require("../utils/errors");
+const { handleError } = require("../utils/errors");
 
 // CREATE
 module.exports.createUser = (req, res) => {
@@ -19,9 +17,9 @@ module.exports.createUser = (req, res) => {
       }
       return bcrypt.hash(password, 10).then((hash) => {
         User.create({
-          name: name,
-          avatar: avatar,
-          email: email,
+          name,
+          avatar,
+          email,
           password: hash,
         })
           .then(() => res.send({ name, avatar, email }))
@@ -48,7 +46,6 @@ module.exports.getUsers = (req, res) => {
 module.exports.getCurrentUser = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
-      console.log(req.params);
       res.send({ user });
     })
     .catch((err) => {

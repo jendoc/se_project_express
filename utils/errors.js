@@ -16,8 +16,8 @@ const handleError = (err, req, res) => {
       .send({ message: `${ERROR_CODES.BadRequest} Invalid input` });
   } else if (
     err.statusCode === 401 ||
-    err.message == "Incorrect email or password" ||
-    err.message == "data and hash arguments required"
+    err.message === "Incorrect email or password" ||
+    err.message === "data and hash arguments required"
   ) {
     res.status(ERROR_CODES.Unauthorized).send({
       message: `${ERROR_CODES.Unauthorized} Unauthorized`,

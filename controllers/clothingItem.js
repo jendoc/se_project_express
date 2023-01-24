@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 
-const { handleError } = require("../utils/errors");
+const { handleError, handleAuthError } = require("../utils/errors");
 
 // CREATE
 module.exports.createClothingItem = (req, res) => {
@@ -35,7 +34,8 @@ module.exports.deleteClothingItem = (req, res) => {
       if (item.owner.equals(req.userId)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      return handleError(err, req, res);
+      const err = new Error("Unauthorized");
+      return handleAuthError(err, req, res);
     })
     .catch((err) => {
       handleError(err, req, res);
