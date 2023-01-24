@@ -17,9 +17,6 @@ router.post("/", auth, createClothingItem);
 // READ
 router.get("/", getClothingItems);
 
-// UPDATE
-router.put("/:itemId", auth, updateClothingItem);
-
 // DELETE
 router.delete("/:itemId", auth, deleteClothingItem);
 

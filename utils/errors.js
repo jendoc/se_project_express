@@ -10,21 +10,23 @@ const ERROR_CODES = {
 };
 
 const handleError = (err, req, res) => {
-  if (err.statusCode === 200 || err.statusCode === 201) {
-    res.status(err.statusCode).send({ message: `${err.statusCode} Success` });
-  } else if (err.name === "ValidationError" || err.name === "CastError") {
+  if (err.statusCode === 400 || err.name === "ValidationError") {
     res
       .status(ERROR_CODES.BadRequest)
       .send({ message: `${ERROR_CODES.BadRequest} Invalid input` });
-  } else if (err.statusCode === 401) {
-    res
-      .status(ERROR_CODES.Unauthorized)
-      .send({ message: `${ERROR_CODES.Unauthorized} Unauthorized` });
-  } else if (err.statusCode === 403) {
+  } else if (
+    err.statusCode === 401 ||
+    err.message == "Incorrect email or password" ||
+    err.message == "data and hash arguments required"
+  ) {
+    res.status(ERROR_CODES.Unauthorized).send({
+      message: `${ERROR_CODES.Unauthorized} Unauthorized`,
+    });
+  } else if (err.statusCode === 403 || err.name === "Forbidden") {
     res
       .status(ERROR_CODES.Forbidden)
       .send({ message: `${ERROR_CODES.Forbidden} Forbidden` });
-  } else if (err.name === "DocumentNotFoundError") {
+  } else if (err.statusCode === 404 || err.name === "DocumentNotFoundError") {
     res
       .status(ERROR_CODES.NotFound)
       .send({ message: `${ERROR_CODES.NotFound} Not found` });
@@ -39,7 +41,12 @@ const handleError = (err, req, res) => {
   }
 };
 
+const handleAuthError = (res) => {
+  res.status(ERROR_CODES.Unauthorized).send({ message: "Authorization Error" });
+};
+
 module.exports = {
   ERROR_CODES,
   handleError,
+  handleAuthError,
 };

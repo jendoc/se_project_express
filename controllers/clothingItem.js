@@ -10,7 +10,7 @@ module.exports.createClothingItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: userId })
     .then((item) => {
-      res.status(201).send({ data: item });
+      res.send({ data: item });
     })
     .catch((err) => {
       handleError(err, req, res);
@@ -20,24 +20,7 @@ module.exports.createClothingItem = (req, res) => {
 // READ
 module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.status(200).send(items))
-    .catch((err) => {
-      handleError(err, req, res);
-    });
-};
-
-// UPDATE
-module.exports.updateClothingItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, {
-    $set: { imageUrl },
-    new: true,
-    runValidators: true,
-  })
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((items) => res.send(items))
     .catch((err) => {
       handleError(err, req, res);
     });
@@ -47,15 +30,12 @@ module.exports.updateClothingItem = (req, res) => {
 module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .then((item) => {
-      console.log(item)
       if (item.owner.equals(req.userId)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      return res.status(403).send({
-        message: "Forbidden",
-      });
+      return handleError(err, req, res);
     })
     .catch((err) => {
       handleError(err, req, res);
@@ -70,7 +50,7 @@ module.exports.likeClothingItem = (req, res) =>
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => res.send({ data: item }))
     .catch((err) => {
       handleError(err, req, res);
     });
@@ -83,7 +63,7 @@ module.exports.dislikeClothingItem = (req, res) =>
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => res.send({ data: item }))
     .catch((err) => {
       handleError(err, req, res);
     });

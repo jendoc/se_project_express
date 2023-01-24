@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const { handleError } = require("../utils/errors");
+const { handleError, handleAuthError } = require("../utils/errors");
 
 // CREATE
 module.exports.createUser = (req, res) => {
@@ -13,7 +13,7 @@ module.exports.createUser = (req, res) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        const error = new Error("Conflict");
+        const error = new Error("User with this email already exists");
         error.statusCode = 409;
         throw error;
       }
@@ -24,12 +24,7 @@ module.exports.createUser = (req, res) => {
           email: email,
           password: hash,
         })
-          .then(() =>
-            res
-              .setHeader("Content-Type", "application/json")
-              .status(201)
-              .send({ name, avatar, email })
-          )
+          .then(() => res.send({ name, avatar, email }))
           .catch((err) => {
             handleError(err, req, res);
           });
@@ -43,19 +38,18 @@ module.exports.createUser = (req, res) => {
 // READ
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.send(users))
     .catch((err) => {
-      //res.send({ message: err.message });
       handleError(err, req, res);
     });
 };
 
 // READ:ID
 module.exports.getCurrentUser = (req, res) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((user) => {
-      console.log(req.params)
-      res.status(200).send({ user });
+      console.log(req.params);
+      res.send({ user });
     })
     .catch((err) => {
       handleError(err, req, res);
@@ -64,14 +58,14 @@ module.exports.getCurrentUser = (req, res) => {
 
 // UPDATE
 module.exports.updateUser = (req, res) => {
-  const { name, avatar, userId } = req.params;
+  const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
-    { userId },
+    req.user._id,
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .then((user) => res.status(200).send({ user }))
+    .then((user) => res.send({ user }))
     .catch((err) => {
       handleError(err, req, res);
     });
@@ -83,13 +77,12 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ userId: user.userId }, `${JWT_SECRET}`, {
+      const token = jwt.sign({ _id: user._id }, `${JWT_SECRET}`, {
         expiresIn: "7d",
       });
       res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
-      //handleError(err, req, res);
+      handleError(err, req, res);
     });
 };
