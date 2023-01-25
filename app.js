@@ -14,11 +14,12 @@ mongoose.connect(
   },
   (err) => {
     console.log("DB error", err);
-  }
+  },
 );
 
 const routes = require("./routes");
 const { createUser, login } = require("./controllers/users");
+const { handleNotFoundError } = require("./utils/errors");
 
 app.use(express.json());
 app.use(routes);
@@ -26,7 +27,8 @@ app.use(cors());
 app.post("/signin/", login);
 app.post("/signup/", createUser);
 app.use((req, res) => {
-  res.status(404).send({ message: "Requested resource not found" });
+  const err = new Error("Not found");
+  handleNotFoundError(err, req, res);
 });
 
 app.listen(PORT, () => {

@@ -7,7 +7,9 @@ const { handleError } = require("../utils/errors");
 
 // CREATE
 module.exports.createUser = (req, res) => {
-  const { name, avatar, email, password } = req.body;
+  const {
+    name, avatar, email, password,
+  } = req.body;
   User.findOne({ email })
     .then((user) => {
       if (user) {
@@ -60,7 +62,7 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => res.send({ user }))
     .catch((err) => {

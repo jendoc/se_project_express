@@ -1,13 +1,15 @@
 const ClothingItem = require("../models/clothingItem");
 
-const { handleError, handleAuthError } = require("../utils/errors");
+const { handleError } = require("../utils/errors");
 
 // CREATE
 module.exports.createClothingItem = (req, res) => {
   const userId = req.user._id;
   const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl, owner: userId })
+  ClothingItem.create({
+    name, weather, imageUrl, owner: userId,
+  })
     .then((item) => {
       res.send({ data: item });
     })
@@ -30,12 +32,13 @@ module.exports.deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
+    .orFail()
     .then((item) => {
       if (item.owner.equals(req.userId)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      const err = new Error("Unauthorized");
-      return handleAuthError(err, req, res);
+      const err = new Error("Forbidden");
+      return handleError(err, req, res);
     })
     .catch((err) => {
       handleError(err, req, res);
@@ -43,27 +46,25 @@ module.exports.deleteClothingItem = (req, res) => {
 };
 
 // LIKE
-module.exports.likeClothingItem = (req, res) =>
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
-    .orFail()
-    .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      handleError(err, req, res);
-    });
+module.exports.likeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+  req.params.itemId,
+  { $addToSet: { likes: req.user._id } },
+  { new: true },
+)
+  .orFail()
+  .then((item) => res.send({ data: item }))
+  .catch((err) => {
+    handleError(err, req, res);
+  });
 
 // DISLIKE
-module.exports.dislikeClothingItem = (req, res) =>
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } },
-    { new: true }
-  )
-    .orFail()
-    .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      handleError(err, req, res);
-    });
+module.exports.dislikeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+  req.params.itemId,
+  { $pull: { likes: req.user._id } },
+  { new: true },
+)
+  .orFail()
+  .then((item) => res.send({ data: item }))
+  .catch((err) => {
+    handleError(err, req, res);
+  });
