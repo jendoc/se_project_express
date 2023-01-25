@@ -37,4 +37,4 @@ Project features include:
 [js]: https://img.shields.io/badge/javascript-000000?style=for-the-badge&logo=javascript&logoColor=#F7DF1E
 [js-url]: https://www.javascript.com/
 [JSONwt]: https://img.shields.io/badge/jsonwebtokens-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=#F7DF1E
-[JSONwt-url]: https://www.javascript.com/
+[JSONwt-url]: https://www.javascript.com/](https://www.npmjs.com/package/jsonwebtoken)
