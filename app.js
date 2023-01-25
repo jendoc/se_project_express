@@ -27,8 +27,7 @@ app.use(cors());
 app.post("/signin/", login);
 app.post("/signup/", createUser);
 app.use((req, res) => {
-  const err = new Error("Not found");
-  handleNotFoundError(err, req, res);
+  handleNotFoundError(res);
 });
 
 app.listen(PORT, () => {

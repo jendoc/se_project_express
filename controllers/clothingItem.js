@@ -34,11 +34,10 @@ module.exports.deleteClothingItem = (req, res) => {
   ClothingItem.findById(itemId)
     .orFail()
     .then((item) => {
-      if (item.owner.equals(req.userId)) {
+      if (item.owner.equals(req.user._id)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      const err = new Error("Forbidden");
-      return handleError(err, req, res);
+      throw new Error("Forbidden");
     })
     .catch((err) => {
       handleError(err, req, res);

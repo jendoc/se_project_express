@@ -10,7 +10,7 @@ const ERROR_CODES = {
 };
 
 const handleError = (err, req, res) => {
-  if (err.statusCode === 400 || err.name === "ValidationError") {
+  if (err.statusCode === 400 || err.name === "ValidationError" || err.name === "CastError") {
     res
       .status(ERROR_CODES.BadRequest)
       .send({ message: `${ERROR_CODES.BadRequest} Invalid input` });
@@ -22,7 +22,7 @@ const handleError = (err, req, res) => {
     res.status(ERROR_CODES.Unauthorized).send({
       message: `${ERROR_CODES.Unauthorized} Unauthorized`,
     });
-  } else if (err.statusCode === 403 || err.name === "Forbidden" || err.name === "CastError") {
+  } else if (err.statusCode === 403 || err.message === "Forbidden") {
     res
       .status(ERROR_CODES.Forbidden)
       .send({ message: `${ERROR_CODES.Forbidden} Forbidden` });
