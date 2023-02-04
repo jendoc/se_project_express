@@ -10,6 +10,7 @@ const ERROR_CODES = {
 };
 
 const handleError = (err, req, res) => {
+  console.error(err);
   if (err.statusCode === 400 || err.name === "ValidationError" || err.name === "CastError") {
     res
       .status(ERROR_CODES.BadRequest)
