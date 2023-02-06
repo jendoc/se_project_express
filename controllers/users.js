@@ -7,8 +7,8 @@ const { handleError } = require("../utils/errors");
 
 // CREATE
 module.exports.createUser = (req, res) => {
-  const { email, password, name, avatar } = req.body;
-  return User.findOne({ email })
+  const { name, avatar, email, password } = req.body;
+  User.findOne({ email })
     .then((user) => {
       if (user) {
         const error = new Error("User with this email already exists");
@@ -22,7 +22,7 @@ module.exports.createUser = (req, res) => {
           name,
           avatar,
         })
-          .then(() => res.send({ email, name, avatar }))
+          .then(() => res.send({ name, avatar, email }))
           .catch((err) => {
             handleError(err, req, res);
           });

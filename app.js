@@ -10,11 +10,11 @@ const app = express();
 mongoose.connect(
   "mongodb://127.0.0.1:27017/wtwr_db",
   (res) => {
-    console.log("connected to DB", res);
+    console.log("connected to DB");
   },
   (err) => {
     console.log("DB error", err);
-  },
+  }
 );
 
 const routes = require("./routes");

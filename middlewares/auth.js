@@ -2,15 +2,14 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const { handleAuthError } = require("../utils/errors");
 
-const extractBearerToken = (header) => header.replace("Bearer ", "");
-
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     handleAuthError(res);
   }
-  const token = extractBearerToken(authorization);
+
+  const token = authorization.replace("Bearer ", "");
   let payload;
   try {
     payload = jwt.verify(token, JWT_SECRET);

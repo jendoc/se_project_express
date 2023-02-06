@@ -17,8 +17,6 @@ Project features include:
 * Authorization with middleware
 * Authentication with JSON web tokens
 
-
-
 ### Built With
 
 [![JavaScript][js]][js-url]
