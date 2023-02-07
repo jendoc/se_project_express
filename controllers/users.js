@@ -15,14 +15,20 @@ module.exports.createUser = (req, res) => {
         error.statusCode = 409;
         throw error;
       }
-      bcrypt.hash(password, 10).then((hash) => {
+      return bcrypt.hash(password, 10).then((hash) => {
         User.create({
-          email,
-          password: hash,
           name,
           avatar,
+          email,
+          password: hash,
         })
-          .then(() => res.send({ name, avatar, email }))
+          .then((data) =>
+            res.setHeader("Content-Type", "application/json").send({
+              name: data.name,
+              avatar: data.avatar,
+              email: data.email,
+            })
+          )
           .catch((err) => {
             handleError(err, req, res);
           });
@@ -44,7 +50,7 @@ module.exports.getUsers = (req, res) => {
 
 // READ:ID
 module.exports.getCurrentUser = (req, res) => {
-  User.findById(req.user._id)
+  User.findById({ _id: req.user._id })
     .then((user) => {
       res.send({ user });
     })
@@ -58,7 +64,7 @@ module.exports.updateUser = (req, res) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
-    req.user._id,
+    { _id: req.user._id },
     { name, avatar },
     { new: true, runValidators: true }
   )
@@ -74,7 +80,7 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, `${JWT_SECRET}`, {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       res.send({ token });
