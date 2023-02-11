@@ -7,6 +7,7 @@ const { handleError } = require("../utils/errors");
 
 // CREATE
 module.exports.createUser = (req, res) => {
+  console.log(req.body)
   const { name, avatar, email, password } = req.body;
   User.findOne({ email })
     .then((user) => {

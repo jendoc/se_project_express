@@ -24,11 +24,16 @@ const { handleNotFoundError } = require("./utils/errors");
 app.use(express.json());
 app.use(routes);
 app.use(cors());
-app.post("/signin/", login);
-app.post("/signup/", createUser);
+app.post("/signin", login);
+app.post("/signup", createUser);
 app.use((req, res) => {
   handleNotFoundError(res);
 });
+
+ app.use((req, res, next) => {
+   res.header('Access-Control-Allow-Origin', "http://localhost:3000");
+   next();
+ })
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
