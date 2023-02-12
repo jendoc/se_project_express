@@ -3,8 +3,8 @@ const { JWT_SECRET } = require("../utils/config");
 const { handleAuthError } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
-  console.log(req)
   const { authorization } = req.headers;
+  console.log(req)
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     handleAuthError(res);
