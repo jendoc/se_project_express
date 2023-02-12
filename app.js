@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const auth = require("./middlewares/auth");
 
 require("dotenv").config();
 
@@ -23,17 +24,29 @@ const { handleNotFoundError } = require("./utils/errors");
 
 app.use(express.json());
 app.use(routes);
-app.use(cors());
 app.post("/signin", login);
 app.post("/signup", createUser);
-app.use((req, res) => {
+app.use(auth, (next) => {
   handleNotFoundError(res);
+  next();
 });
 
- app.use((req, res, next) => {
-   res.header('Access-Control-Allow-Origin', "http://localhost:3000");
-   next();
- })
+const allowedOrigins = ["http://localhost:3000"];
+
+app.use(cors({ origin: allowedOrigins }));
+
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", "*");
+  }
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
