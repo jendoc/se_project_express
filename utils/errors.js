@@ -43,7 +43,7 @@ const handleError = (err, req, res) => {
 };
 
 const handleAuthError = (res) => {
-  res.status(ERROR_CODES.Unauthorized).send({ message: "Authorization Error" });
+  res.status(ERROR_CODES.Unauthorized);
 };
 
 const handleNotFoundError = (res) => {

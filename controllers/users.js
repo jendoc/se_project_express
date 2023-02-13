@@ -8,6 +8,7 @@ const { handleError } = require("../utils/errors");
 // CREATE
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+  console.log(req.body)
   User.findOne({ email })
     .then((user) => {
       if (user) {
@@ -49,10 +50,10 @@ module.exports.createUser = (req, res) => {
 // };
 
 // READ:ID
-module.exports.getCurrentUser = (req, res) => {
-  User.findById({ _id: req.user._id })
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
     .then((user) => {
-      res.send({ user });
+      res.send({ data: user });
     })
     .catch((err) => {
       handleError(err, req, res);
