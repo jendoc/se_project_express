@@ -21,13 +21,13 @@ module.exports.createUser = (req, res) => {
           name,
           avatar,
           email,
-          password: hash,
+          password: hash
         })
           .then((data) =>
             res.setHeader("Content-Type", "application/json").send({
               name: data.name,
               avatar: data.avatar,
-              email: data.email,
+              email: data.email
             })
           )
           .catch((err) => {

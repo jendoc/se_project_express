@@ -4,7 +4,6 @@ const { handleAuthError } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
-  console.log(req)
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     handleAuthError(res);
