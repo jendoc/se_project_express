@@ -3,40 +3,40 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const { handleError } = require("../utils/errors");
+//const { handleError } = require("../utils/errors");
+const { ConflictError } = require("../errors/conflict");
 
 // CREATE
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  console.log(req.body)
+  console.log(req.body);
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        const error = new Error("User with this email already exists");
-        error.statusCode = 409;
-        throw error;
+        const error = new ConflictError("User with this email already exists");
+        return next(error);
       }
       return bcrypt.hash(password, 10).then((hash) => {
         User.create({
           name,
           avatar,
           email,
-          password: hash
+          password: hash,
         })
           .then((data) =>
             res.setHeader("Content-Type", "application/json").send({
               name: data.name,
               avatar: data.avatar,
-              email: data.email
+              email: data.email,
             })
           )
           .catch((err) => {
-            handleError(err, req, res);
+            next(err);
           });
       });
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -45,7 +45,7 @@ module.exports.createUser = (req, res) => {
 //   User.find({})
 //     .then((users) => res.send(users))
 //     .catch((err) => {
-//       handleError(err, req, res);
+//       next(err)
 //     });
 // };
 
@@ -56,7 +56,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -71,7 +71,7 @@ module.exports.updateUser = (req, res) => {
   )
     .then((user) => res.send({ user }))
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -87,6 +87,6 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };

@@ -1,6 +1,6 @@
 {
   "name": "se_project_express",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "WTWR Weather App Back-End",
   "main": "app.js",
   "scripts": {
@@ -19,16 +19,19 @@
   "bugs": {
     "url": "https://github.com/jendoc/se_project_express/issues"
   },
-  "homepage": "https://github.com/jendoc/se_project_express#readme",
+  "homepage": "https://jendoc-wtwr.students.nomoredomainssbs.ru/",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
+    "celebrate": "^15.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "express-winston": "^4.2.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.3",
-    "validator": "^13.7.0"
+    "validator": "^13.9.0",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "eslint": "^8.31.0",

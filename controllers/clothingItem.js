@@ -1,6 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
 
-const { handleError } = require("../utils/errors");
+//const { handleError } = require("../utils/errors");
+const { ConflictError } = require("../errors/conflict");
+const { ForbiddenError } = require("../errors/forbidden");
 
 // CREATE
 module.exports.createClothingItem = (req, res) => {
@@ -14,7 +16,7 @@ module.exports.createClothingItem = (req, res) => {
       res.send({ data: item });
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -23,7 +25,7 @@ module.exports.getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -37,10 +39,10 @@ module.exports.deleteClothingItem = (req, res) => {
       if (item.owner.equals(req.user._id)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      throw new Error("Forbidden");
+      throw new ForbiddenError("Forbidden");
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
@@ -53,7 +55,7 @@ module.exports.likeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
   .orFail()
   .then((item) => res.send({ data: item }))
   .catch((err) => {
-    handleError(err, req, res);
+    next(err);
   });
 
 // DISLIKE
@@ -65,5 +67,5 @@ module.exports.dislikeClothingItem = (req, res) => ClothingItem.findByIdAndUpdat
   .orFail()
   .then((item) => res.send({ data: item }))
   .catch((err) => {
-    handleError(err, req, res);
+    next(err);
   });

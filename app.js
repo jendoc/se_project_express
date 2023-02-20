@@ -2,6 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const auth = require("./middlewares/auth");
+const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+const { errors } = require("celebrate");
 
 require("dotenv").config();
 
@@ -24,6 +27,7 @@ const { createUser, login } = require("./controllers/users");
 const { handleNotFoundError } = require("./utils/errors");
 
 app.use(express.json());
+app.use(requestLogger);
 app.use(routes);
 app.post("/signin", login);
 app.post("/signup", createUser);
@@ -31,6 +35,10 @@ app.use(auth, (next) => {
   handleNotFoundError(res);
   next();
 });
+
+app.use(errorLogger);
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
