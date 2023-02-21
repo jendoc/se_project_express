@@ -82,6 +82,6 @@ module.exports.validateUserLogin = celebrate({
 // user and clothing items IDs when they are accessed
 module.exports.validateIds = celebrate({
   params: Joi.object().keys({
-    itemId: Joi.string().length(24).hex.required(),
+    itemId: Joi.string().length(24).hex().required(),
   }),
 });
