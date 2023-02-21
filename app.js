@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
 const errorHandler = require("./middlewares/error-handler");
+const { createUser, login } = require("./controllers/users");
+const {
+  validateUserLogin,
+  validateUserBody,
+} = require("./middlewares/validation");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 require("dotenv").config();
@@ -18,11 +23,10 @@ mongoose.connect(
   },
   (err) => {
     console.log("DB error", err);
-  },
+  }
 );
 
 const routes = require("./routes");
-const { createUser, login } = require("./controllers/users");
 
 app.use(express.json());
 app.use(requestLogger);
@@ -36,8 +40,8 @@ app.get("/crash-test", () => {
 });
 // ! ---------------------------
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", validateUserLogin, login);
+app.post("/signup", validateUserBody, createUser);
 
 app.use(errorLogger);
 app.use(errors());
