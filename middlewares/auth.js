@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
+const UnauthorizedError = require("../errors/unauthorized");
+
 const { NODE_ENV, JWT_SECRET } = process.env;
-const { handleAuthError } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    handleAuthError(res);
+    throw new UnauthorizedError("Unauthorized");
   }
 
   const token = authorization.replace("Bearer ", "");
@@ -14,10 +15,10 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(
       token,
-      NODE_ENV === "production" ? JWT_SECRET : "super-secret"
+      NODE_ENV === "production" ? JWT_SECRET : "super-secret",
     );
   } catch (err) {
-    handleAuthError(res);
+    throw new UnauthorizedError("Unauthorized");
   }
   req.user = payload;
   next();
