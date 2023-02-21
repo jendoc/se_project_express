@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config");
+const { NODE_ENV, JWT_SECRET } = process.env;
 const { handleAuthError } = require("../utils/errors");
 
 module.exports = (req, res, next) => {
@@ -12,7 +12,10 @@ module.exports = (req, res, next) => {
   const token = authorization.replace("Bearer ", "");
   let payload;
   try {
-    payload = jwt.verify(token, JWT_SECRET);
+    payload = jwt.verify(
+      token,
+      NODE_ENV === "production" ? JWT_SECRET : "super-secret"
+    );
   } catch (err) {
     handleAuthError(res);
   }

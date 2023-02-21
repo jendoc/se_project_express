@@ -1,16 +1,14 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { JWT_SECRET } = require("../utils/config");
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 // const { handleError } = require("../utils/errors");
 const { ConflictError } = require("../errors/conflict");
 
 // CREATE
 module.exports.createUser = (req, res, next) => {
-  const {
-    name, avatar, email, password,
-  } = req.body;
+  const { name, avatar, email, password } = req.body;
   console.log(req.body);
   User.findOne({ email })
     .then((user) => {
@@ -25,11 +23,13 @@ module.exports.createUser = (req, res, next) => {
           email,
           password: hash,
         })
-          .then((data) => res.setHeader("Content-Type", "application/json").send({
-            name: data.name,
-            avatar: data.avatar,
-            email: data.email,
-          }))
+          .then((data) =>
+            res.setHeader("Content-Type", "application/json").send({
+              name: data.name,
+              avatar: data.avatar,
+              email: data.email,
+            })
+          )
           .catch((err) => {
             next(err);
           });
@@ -67,7 +67,7 @@ module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(
     { _id: req.user._id },
     { name, avatar, token },
-    { new: true, runValidators: true },
+    { new: true, runValidators: true }
   )
     .then((user) => res.send({ user }))
     .catch((err) => {
@@ -81,9 +81,13 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === "production" ? JWT_SECRET : "super-secret",
+        {
+          expiresIn: "7d",
+        }
+      );
       res.send({ token });
     })
     .catch((err) => {
