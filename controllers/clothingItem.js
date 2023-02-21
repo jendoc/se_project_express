@@ -1,69 +1,77 @@
 const ClothingItem = require("../models/clothingItem");
 
-const { handleError } = require("../utils/errors");
+// const { handleError } = require("../utils/errors");
+const ForbiddenError = require("../errors/forbidden");
+const BadRequestError = require("../errors/bad-request");
+const NotFoundError = require("../errors/not-found");
 
 // CREATE
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const userId = req.user._id;
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({
-    name, weather, imageUrl, owner: userId,
+    name,
+    weather,
+    imageUrl,
+    owner: userId,
   })
     .then((item) => {
       res.send({ data: item });
     })
     .catch((err) => {
-      handleError(err, req, res);
+      if (err.name === "ValidationError") {
+        next(new BadRequestError("Invalid data"));
+      } else {
+        next(err);
+      }
     });
 };
 
 // READ
-module.exports.getClothingItems = (req, res) => {
+module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
-      handleError(err, req, res);
-    });
+    .catch(next);
 };
 
 // DELETE
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
-    .orFail()
+    .orFail(() => new NotFoundError("Item ID not found"))
     .then((item) => {
       if (item.owner.equals(req.user._id)) {
         return item.remove(() => res.send({ clothingItem: item }));
       }
-      throw new Error("Forbidden");
+      throw new ForbiddenError("Forbidden");
     })
     .catch((err) => {
-      handleError(err, req, res);
+      next(err);
     });
 };
 
 // LIKE
-module.exports.likeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+module.exports.likeClothingItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
   req.params.itemId,
   { $addToSet: { likes: req.user._id } },
   { new: true },
 )
-  .orFail()
+  .orFail(() => new NotFoundError("Item ID not found"))
   .then((item) => res.send({ data: item }))
   .catch((err) => {
-    handleError(err, req, res);
+    next(err);
   });
 
 // DISLIKE
-module.exports.dislikeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+module.exports.dislikeClothingItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
   req.params.itemId,
   { $pull: { likes: req.user._id } },
   { new: true },
 )
-  .orFail()
+  .orFail(() => new NotFoundError("Item ID not found"))
   .then((item) => res.send({ data: item }))
   .catch((err) => {
-    handleError(err, req, res);
+    next(err);
   });
