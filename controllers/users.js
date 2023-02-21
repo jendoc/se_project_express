@@ -62,11 +62,11 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 // UPDATE
 module.exports.updateUser = (req, res, next) => {
-  const { name, avatar, token } = req.body;
+  const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
     { _id: req.user._id },
-    { name, avatar, token },
+    { name, avatar },
     { new: true, runValidators: true },
   )
     .orFail(() => new NotFoundError("User ID not found"))
