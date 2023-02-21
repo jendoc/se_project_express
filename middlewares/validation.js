@@ -12,11 +12,12 @@ const validateURL = (value, helpers) => {
 module.exports.validateCardBody = celebrate({
   body: Joi.object().keys({
     // - item name is required string between 2 and 30 chars
-    name: Joi.string().required().min(2).max(30).messages({
-      "string.min": 'The minimun length of the "name" field is 2',
-      "string.max": 'The maximum length of the "name" field is 30',
-      "string.empty": 'The "name" field cannot be empty',
-    }),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        "string.min": 'The minimun length of the "name" field is 2',
+        "string.max": 'The maximum length of the "name" field is 30',
+        "string.empty": 'The "name" field cannot be empty',
+      }),
     // - an image url is a required string in a url format
     imageUrl: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "imageUrl" field cannot be empty',
@@ -29,11 +30,12 @@ module.exports.validateCardBody = celebrate({
 module.exports.validateUserBody = celebrate({
   body: Joi.object().keys({
     // - the username is a string of between 2 and 30 chars
-    name: Joi.string().required().min(2).max(30).messages({
-      "string.min": 'The minimun length of the "name" field is 2',
-      "string.max": 'The maximum length of the "name" field is 30',
-      "string.empty": 'The "name" field cannot be empty',
-    }),
+    name: Joi.string().required().min(2).max(30)
+      .messages({
+        "string.min": 'The minimun length of the "name" field is 2',
+        "string.max": 'The maximum length of the "name" field is 30',
+        "string.empty": 'The "name" field cannot be empty',
+      }),
     // - the user avatar is a required string in a url format
     avatar: Joi.string().required().custom(validateURL).messages({
       "string.empty": 'The "avatar" field cannot be empty',

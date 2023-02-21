@@ -1,16 +1,18 @@
 const ClothingItem = require("../models/clothingItem");
 
-//const { handleError } = require("../utils/errors");
-const { ConflictError } = require("../errors/conflict");
+// const { handleError } = require("../utils/errors");
 const { ForbiddenError } = require("../errors/forbidden");
 
 // CREATE
-module.exports.createClothingItem = (req, res) => {
+module.exports.createClothingItem = (req, res, next) => {
   const userId = req.user._id;
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({
-    name, weather, imageUrl, owner: userId,
+    name,
+    weather,
+    imageUrl,
+    owner: userId,
   })
     .then((item) => {
       res.send({ data: item });
@@ -21,7 +23,7 @@ module.exports.createClothingItem = (req, res) => {
 };
 
 // READ
-module.exports.getClothingItems = (req, res) => {
+module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
     .catch((err) => {
@@ -30,7 +32,7 @@ module.exports.getClothingItems = (req, res) => {
 };
 
 // DELETE
-module.exports.deleteClothingItem = (req, res) => {
+module.exports.deleteClothingItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
@@ -47,7 +49,7 @@ module.exports.deleteClothingItem = (req, res) => {
 };
 
 // LIKE
-module.exports.likeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+module.exports.likeClothingItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
   req.params.itemId,
   { $addToSet: { likes: req.user._id } },
   { new: true },
@@ -59,7 +61,7 @@ module.exports.likeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
   });
 
 // DISLIKE
-module.exports.dislikeClothingItem = (req, res) => ClothingItem.findByIdAndUpdate(
+module.exports.dislikeClothingItem = (req, res, next) => ClothingItem.findByIdAndUpdate(
   req.params.itemId,
   { $pull: { likes: req.user._id } },
   { new: true },

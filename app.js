@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { errors } = require("celebrate");
 const auth = require("./middlewares/auth");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { errors } = require("celebrate");
 
 require("dotenv").config();
 
@@ -15,24 +15,31 @@ app.use(cors({ origin: "*" }));
 mongoose.connect(
   "mongodb://127.0.0.1:27017/wtwr_db",
   (res) => {
-    console.log("connected to DB");
+    console.log("connected to DB", res);
   },
   (err) => {
     console.log("DB error", err);
-  }
+  },
 );
 
 const routes = require("./routes");
 const { createUser, login } = require("./controllers/users");
-const { handleNotFoundError } = require("./utils/errors");
 
 app.use(express.json());
 app.use(requestLogger);
 app.use(routes);
+
+// ! Remove after passing review
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+// ! ---------------------------
+
 app.post("/signin", login);
 app.post("/signup", createUser);
 app.use(auth, (next) => {
-  handleNotFoundError(res);
   next();
 });
 

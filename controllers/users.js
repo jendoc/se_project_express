@@ -3,12 +3,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-//const { handleError } = require("../utils/errors");
+// const { handleError } = require("../utils/errors");
 const { ConflictError } = require("../errors/conflict");
 
 // CREATE
-module.exports.createUser = (req, res) => {
-  const { name, avatar, email, password } = req.body;
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, avatar, email, password,
+  } = req.body;
   console.log(req.body);
   User.findOne({ email })
     .then((user) => {
@@ -23,13 +25,11 @@ module.exports.createUser = (req, res) => {
           email,
           password: hash,
         })
-          .then((data) =>
-            res.setHeader("Content-Type", "application/json").send({
-              name: data.name,
-              avatar: data.avatar,
-              email: data.email,
-            })
-          )
+          .then((data) => res.setHeader("Content-Type", "application/json").send({
+            name: data.name,
+            avatar: data.avatar,
+            email: data.email,
+          }))
           .catch((err) => {
             next(err);
           });
@@ -61,13 +61,13 @@ module.exports.getCurrentUser = (req, res, next) => {
 };
 
 // UPDATE
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar, token } = req.body;
 
   User.findByIdAndUpdate(
     { _id: req.user._id },
     { name, avatar, token },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => res.send({ user }))
     .catch((err) => {
@@ -76,7 +76,7 @@ module.exports.updateUser = (req, res) => {
 };
 
 // LOGIN
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
