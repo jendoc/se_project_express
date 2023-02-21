@@ -32,9 +32,7 @@ module.exports.createClothingItem = (req, res, next) => {
 module.exports.getClothingItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 // DELETE
