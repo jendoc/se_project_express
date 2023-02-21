@@ -22,14 +22,13 @@ mongoose.connect(
   },
   (err) => {
     console.log("DB error", err);
-  },
+  }
 );
 
 const routes = require("./routes");
 
 app.use(express.json());
 app.use(requestLogger);
-app.use(routes);
 
 // ! Remove after passing review
 app.get("/crash-test", () => {
@@ -41,6 +40,7 @@ app.get("/crash-test", () => {
 
 app.post("/signin", validateUserLogin, login);
 app.post("/signup", validateUserBody, createUser);
+app.use(routes);
 
 app.use(errorLogger);
 app.use(errors());
